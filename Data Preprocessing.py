@@ -15,7 +15,3 @@ for f in range(len(dir_list)):
     df = df.reset_index(drop=True)
 
     export_file = df.to_csv(PATH + 'export_' + dir_list[f], sep=';', index=False, header=True)
-
-# Export new formatted data file
-# export_test = df.to_csv(r'/Users/Tuan/Desktop/Output/Converted files/export_10361_1961-2020_Kart.csv',
-# sep=';', index=False, header=True)
