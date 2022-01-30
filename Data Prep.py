@@ -44,8 +44,10 @@ print("\n")
 
 # Print the summary statistics of the DataFrame
 df_kart = df_kart.drop(columns=["Jahr", "Tag", "Combined"])
+y_ticks = np.arange(0, 110, 10)
 
-ax = df_kart["BOF (%nFK)"]["2018-01-01":"2018-12-31"].plot(linewidth=1, fontsize=10)
+plt.yticks(y_ticks)
+ax = df_kart["BOF (%nFK)"]["1961-01-01":"1961-12-31"].plot(linewidth=1, fontsize=10)
 
 # Additional customizations
 ax.set_xlabel('Date')
