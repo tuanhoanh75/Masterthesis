@@ -10,7 +10,7 @@ plt.rcParams['figure.figsize'] = (10,5)
 plt.style.use('fivethirtyeight')
 
 # Get Files from directory
-PATH = r"/Users/Tuan/Desktop/Output/Converted_files/csv"
+PATH = r"/Users/Tuan/Masterarbeit/Data/Converted_files/csv"
 file_list = os.listdir(PATH)
 
 # Presets: Show maximum columns and in one row
@@ -36,6 +36,10 @@ df_kart["Date"] = pd.to_datetime(df_kart["Combined"], format="%Y%j")
 first_col = df_kart.pop("Date")             # shift column 'Name' to first position
 df_kart.insert(0, "Date", first_col)        # insert column using insert(position,column_name, first_column) function
 
+# c) Quick resample data from daily to weekly level
+df_weekly = df_kart.drop(columns=["Jahr", "Tag", "Combined", "BOF (Vol%)"])         # Omit superfluous columns
+df_weekly = df_weekly.resample('W', on='Date').mean()                               # With on='Date' it sets automatically column "Date"  as index
+
 ## At first plot multiple raw time series data
 # Set the date column as the index of your DataFrame
 df_kart = df_kart.set_index("Date")
@@ -47,10 +51,5 @@ df_kart = df_kart.drop(columns=["Jahr", "Tag", "Combined"])
 y_ticks = np.arange(0, 110, 10)
 
 plt.yticks(y_ticks)
-ax = df_kart["BOF (%nFK)"]["1961-01-01":"1961-12-31"].plot(linewidth=1, fontsize=10)
-
-# Additional customizations
-ax.set_xlabel('Date')
-ax.legend(fontsize=10)
-
-plt.show()
+ax_daily = df_kart["BOF (%nFK)"]["1961-01-01":"1961-12-31"].plot(linewidth=1, fontsize=10)
+ax_weekly = df_weekly["BOF (%nFK)"]["1961-01-01":"1961-12-31"].plot(linewidth=1, fontsize=10)
