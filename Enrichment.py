@@ -17,25 +17,20 @@ files_weekly = sorted(os.listdir(PATH + 'Weekly/'))
 
 # Define regex pattern for substring extraction
 #pattern_vNames = re.compile(r'[a-z0-9]+_\d{4}-\d{4}_\w{,4}', re.IGNORECASE)
-pattern_vStation = re.recompile(r'[a-z0-9]{5}', re.IGNORECASE)
-pattern_vPeriod = re.recompile(r'd{4}-\d{4}', re.IGNORECASE)
-
-pattern_vMainCrop = re.recompile(r'[a-z0-9]{5}', re.IGNORECASE)
+pattern_vStation = re.compile(r'[A-Z0-9]{5}')
+pattern_vPeriod = re.compile(r'\d{4}-\d{4}')
+pattern_vMainCrop = re.compile(r'[A-Z]+[a-zA-Z]{,3}')
 
 # Return a list of substrings from extraction of the filenames
-# list_substr = sorted([x for f in range(len(files_daily)) for x in re.findall(pattern_vNames, str(files_daily[f]))])
+list_station = [x for f in range(len(files_daily)) for x in re.findall(pattern_vStation, str(files_daily[f]))]
+list_period = [x for f in range(len(files_daily)) for x in re.findall(pattern_vPeriod, str(files_daily[f]))]
+list_crop =  [x for f in range(len(files_daily)) for x in re.findall(pattern_vMainCrop, str(files_daily[f]))]
 
-# Extract substrings from the filenames
-station = []
-period = []
-crop =  []
+list_crop = list(filter(lambda a:a!='OO', list_crop))
+list_crop = list(map(lambda x: x.upper(), list_crop))
 
-# ToDo: Complete loop and writing hdf5 files
 
-for i in range(len(files_daily)):
-    tmp_station = re.findall(pattern_vStation, str(files_daily[i]))
-    tmp_period = re.findall(pattern_vPeriod, str(files_daily[i]))
-    tmp_vMainCrop = re.findall(pattern_vMainCrop, str(files_daily[i]))
+# 
 
 
 
