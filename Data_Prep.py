@@ -20,9 +20,12 @@ pd.set_option('display.width', None)
 # Read csv Data Files; e.g. Kartoffel and interpret decimal with dot instead comma; Taking int32 instead default
 # int64 or float64 respectively for saving memory
 for f in range(len(file_list)):
-    df_daily = pd.read_csv(PATH + "/" + file_list[f], delimiter=';', 
+    df_daily = pd.read_csv(PATH + "/" + file_list[0], delimiter=';', 
                        header=0, decimal=',', usecols=["Jahr", "Tag", "BOF (%nFK)", "BOF (Vol%)"], 
                        dtype={"Jahr": np.int32, "Tag": np.int32, "BOF (%nFK)": np.float32, "BOF (Vol%)": np.float32})
+    
+    df_daily_2 = pd.read_csv(PATH + "/" + file_list[0], delimiter=';', 
+                       header=0, decimal=',', usecols=["Jahr", "Tag", "BOF (%nFK)", "BOF (Vol%)"])
     
     ## Convert cols "Jahr" and "Tag" to datetime format, whereby Day 1, 2019 can be translated to jan 1st 2019
     # a.) Create a new col
