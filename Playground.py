@@ -1,14 +1,11 @@
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
+from pathlib import Path
+import os
 
-# Generate time series of lenght of t = 10
-t = range(1,11)
+data_folder = Path("/home/aegis/Dokumente/Masterarbeit/Data/Converted_files/csv")
 
+file_list = sorted(os.listdir(data_folder))
 
-ts = pd.DataFrame([3,1,2,6,4,1,1,8,4,0], index=t)
-print(ts)
+print(file_list)
 
-ts = ts.rename(columns={ts.columns[0]: 'x'})
-
-plt.plot(ts.x, linewidth=1)
