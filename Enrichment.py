@@ -9,7 +9,6 @@ Created on Fri Feb  4 18:30:53 2022
 import os
 import re
 import pandas as pd
-#from matplotlib.pyplot import pyplot as plt
 
 PATH = r'/home/aegis/Dokumente/Masterarbeit/Data/Converted_files/'
 files_daily = sorted(os.listdir(PATH + 'Daily/'))
@@ -31,26 +30,26 @@ list_crop = list(map(lambda x: x.upper(), list_crop))
 
 
 # Loop through all data sets and create for each of them meta data set
-for i, element in enumerate(files_daily):                        
+for i, element in enumerate(files_daily):
     file_read = pd.read_csv(PATH + 'Daily/' + files_daily[i],
                             delimiter=';', decimal=',', header=0)
-    
-    # Create hdf5 container and store data within it 
+
+    # Create hdf5 container and store data within it
     storedata_daily = pd.HDFStore(PATH + '/hdf5_files/' + 'data_daily.hdf5')
-    
+
     # Data
     storedata_daily.put('data_' + list_crop[i] + '_' + list_station[i], file_read)
-    
+
     # Including meta data
     meta_daily = {'Station': list_station[i],
                   'Hauptfrucht': list_crop[i],
                   'Zwischenfrucht': 'keine',
                   'Flexbilisierung': 'keine',
                   'Betrachtungszeitraum': list_period[i]}
-    
+
     # Getting attributes
     storedata_daily.get_storer('data_' + list_crop[i] + '_' + list_station[i]).attrs.meta_daily = meta_daily
-    
+
     # Closing the storedata
     storedata_daily.close()
 
@@ -67,7 +66,7 @@ print('\nDataFrame:\n', data_daily)
 
 # display stored data or the name of the file where data are stored
 #print('\nStored Data:\n', storedata_daily)
- 
+
 # display metadata
 print('\nMetadata:\n', metadata_daily)
 
@@ -83,9 +82,9 @@ df_weekly = data_daily.resample("W", on="Date").mean()
 
 """
 # Read daily and weekly lvl data
-df_daily = pd.read_csv(PATH + 'Daily/' + files_daily[0], 
+df_daily = pd.read_csv(PATH + 'Daily/' + files_daily[0],
                             delimiter=';', decimal=',', header=0)
-                                                  
+
 df_weekly = pd.read_csv(PATH + 'Weekly/' + files_weekly[0],
                              delimiter=';', decimal=',', header=0)
 
@@ -99,9 +98,9 @@ storedata_daily.put('data_01', df_daily)
 #storedata_weekly.put('data_02', df_weekly_kart)
 
 # including meta data
-metadata_daily = {'Station': 10361, 
+metadata_daily = {'Station': 10361,
                   'Hauptfrucht': 'Kartoffeln',
-                  'Zwischenfrucht': 'keine', 
+                  'Zwischenfrucht': 'keine',
                   'Flexbilisierung': 'keine',
                   'Betrachtungszeitraum':"1961-2020"}
 #metadata_weekly = {'scale': 0.1, 'offset': 15}
@@ -126,12 +125,7 @@ print('\nDataFrame:\n', data_daily)
 
 # display stored data or the name of the file where data are stored
 print('\nStored Data:\n', storedata_daily)
- 
+
 # display metadata
 print('\nMetadata:\n', metadata_daily)
 """
-
-
-
-
-
