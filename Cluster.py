@@ -13,12 +13,11 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from matplotlib import pyplot as plt
-# Preproccesing
-from sklearn.preprocessing import MinMaxScaler
 # Algorithms 
 from tslearn.barycenters import dtw_barycenter_averaging
 from tslearn.clustering import TimeSeriesKMeans
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 
 
 # Presets
@@ -36,7 +35,7 @@ read_files = data_file.keys()                 # keys() list all records in the f
 with pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_daily.hdf5") as store_daily:
     data_KART = store_daily[read_files[0]]
     meta_KART = store_daily.get_storer(read_files[0]).attrs.meta_data
-    
+     
     
 # Quick plot data; set col "Date" as index
 data_KART = data_KART.set_index("Date")

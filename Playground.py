@@ -1,9 +1,7 @@
 import os
-import re
 import math
 import numpy as np
 import pandas as pd
-from pathlib import Path
 from matplotlib import pyplot as plt
 # Preproccesing
 from sklearn.preprocessing import MinMaxScaler
@@ -207,8 +205,11 @@ pd.DataFrame(zip(namesofMySeries, names_for_labels_eu),
 names_for_labels_dtw = [f"Cluster {label}" for label in labels_dtw]
 pd.DataFrame(zip(namesofMySeries, names_for_labels_dtw), 
              columns=["Series", "Cluster"]).sort_values(by="Cluster").set_index("Series")
-    
-    
+ 
+
+###################################################################################   
+  
+  
 # Curse of Dimensionality
 pca = PCA(n_components=2)
 MySeries_transformed = pca.fit_transform(MySeries)
@@ -216,18 +217,12 @@ MySeries_transformed = pca.fit_transform(MySeries)
 plt.figure(figsize=(25,10))
 plt.scatter(MySeries_transformed[:,0], MySeries_transformed[:, 1], s=300)
 
-
-kmeans = KMeans(n_clusters=7, max_iter=5000)
+kmeans = KMeans(n_clusters=6, max_iter=5000)
 labels_pca_transformed = kmeans.fit_predict(MySeries_transformed)
 
 plt.figure(figsize=(25,10))
 plt.scatter(MySeries_transformed[:,0], MySeries_transformed[:, 1], 
             c=labels_pca_transformed, s=300)
-
-
-
-###################################################################################
-
 
 
 plot_n = math.ceil(math.sqrt(cluster_n))
@@ -238,8 +233,7 @@ fig.suptitle("Clusters with PCA transformed series")
 row_i = 0
 column_j = 0
 
-
-# With dtw distance metric 
+# set() groups clusters, e.g.: [0 0 0 1 2 2 3 4 4 4 5 5] => {0 1 2 3 4 5}
 for label in set(labels_pca_transformed):
     cluster_pca = []
     for i, elem in enumerate(labels_pca_transformed):
@@ -255,7 +249,6 @@ for label in set(labels_pca_transformed):
     if column_j%plot_n == 0:
         row_i += 1
         column_j = 0
-    
     
     
     
