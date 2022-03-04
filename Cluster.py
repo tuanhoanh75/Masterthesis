@@ -11,8 +11,9 @@ import re
 import math
 import numpy as np
 import pandas as pd
-import datetime
+import dateutil
 from pathlib import Path
+import datetime as dt
 from matplotlib import pyplot as plt
 #Preprocessig
 from sklearn.preprocessing import MinMaxScaler
@@ -36,12 +37,22 @@ read_files = data_file.keys()                 # keys() list all records in the f
 # Read data sets from file container - get daily first
 # Sample: Crop="Kartoffeln", Station=10361, Period=1961-2020
 with pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_daily.hdf5") as store_daily:
+    
+    mySeries = []
+    
     data_KART = store_daily[read_files[0]]
     meta_KART = store_daily.get_storer(read_files[0]).attrs.meta_data
-    data_KART.set_index("Date", inplace=True)
-    data_KART.sort_index(inplace=True)
+    data_KART['Date'] = data_KART['Date'].dt.strftime('%Y-%m-%d')
 
+    data_KART.set_index('Date', inplace=True)
+    data_KART.sort_index(inplace=True)
     
+    # Partition dataframe data_KART by years
+    agg = data_KART.groupby(pd.DatetimeIndex(data_KART.index).year)
+    for y in agg:
+        mySeries.append(y)
+
+ 
 """
 daily_1961 = data_KART["BOF (%nFK)"]["1961-01-01":"1962-12-31"]
 daily_2017 = data_KART["BOF (%nFK)"]["2015-01-01":"2016-12-31"]
