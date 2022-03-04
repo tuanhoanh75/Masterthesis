@@ -12,16 +12,16 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 
-directory = '/home/aegis/Dokumente/Masterarbeit/archive/'
+dire = '/home/aegis/Dokumente/Masterarbeit/archive/'
 
 MySeries = []
 namesofMySeries = []
 
 # Plot data
 
-for filename in os.listdir(directory):
+for filename in os.listdir(dire):
     if filename.endswith(".csv"):
-        df = pd.read_csv(directory + filename)
+        df = pd.read_csv(dire + filename)
         df = df.loc[:,["date", "value"]]
         
         df.set_index("date", inplace=True)

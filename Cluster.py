@@ -11,8 +11,11 @@ import re
 import math
 import numpy as np
 import pandas as pd
+import datetime
 from pathlib import Path
 from matplotlib import pyplot as plt
+#Preprocessig
+from sklearn.preprocessing import MinMaxScaler
 # Algorithms 
 from tslearn.barycenters import dtw_barycenter_averaging
 from tslearn.clustering import TimeSeriesKMeans
@@ -21,7 +24,7 @@ from sklearn.decomposition import PCA
 
 
 # Presets
-DIR = Path("/home/aegis/Dokumente/Masterarbeit/Data")
+DIR = Path("/home/aegis/Dokumente/Masterarbeit/Masterthesis/Data")
 file_container = sorted(os.listdir(str(DIR) + "/" + "hdf5")) 
 plt.rcParams['figure.figsize'] = (26,14)
 plt.style.use('fivethirtyeight')
@@ -35,10 +38,10 @@ read_files = data_file.keys()                 # keys() list all records in the f
 with pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_daily.hdf5") as store_daily:
     data_KART = store_daily[read_files[0]]
     meta_KART = store_daily.get_storer(read_files[0]).attrs.meta_data
-     
+    data_KART.set_index("Date", inplace=True)
+    data_KART.sort_index(inplace=True)
+
     
-# Quick plot data; set col "Date" as index
-data_KART = data_KART.set_index("Date")
 """
 daily_1961 = data_KART["BOF (%nFK)"]["1961-01-01":"1962-12-31"]
 daily_2017 = data_KART["BOF (%nFK)"]["2015-01-01":"2016-12-31"]
