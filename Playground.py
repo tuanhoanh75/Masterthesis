@@ -86,6 +86,7 @@ for i, elem in enumerate(MySeries):
 
 # Clustering using Euclidean and DTW
 cluster_n = math.ceil(math.sqrt(len(MySeries)))
+som_x = som_y = math.ceil(math.sqrt(math.sqrt(len(MySeries))))
 
 km_euclidean = TimeSeriesKMeans(n_clusters=cluster_n, metric="euclidean")
 km_dtw = TimeSeriesKMeans(n_clusters=cluster_n, metric="dtw")

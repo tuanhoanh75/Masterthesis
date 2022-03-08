@@ -33,8 +33,8 @@ daily_file = pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_daily.hdf5")
 daily_files = daily_file.keys()                 # keys() list all records in the file container
 
 # Get all files from file container for weekly data set
-weekly_file = pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_weekly.hdf5")
-weekly_files = weekly_file.keys()  
+#weekly_file = pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_weekly.hdf5")
+#weekly_files = weekly_file.keys()  
 
 
 # Read data sets from file container - get daily first
@@ -127,20 +127,21 @@ del tmp, elem, i, j
 # 1.) K-Means
 # A good rule of thumb is choosing k as the square root of the number of points in the training data set
 cluster_n = math.ceil(math.sqrt(len(mySeries_daily_norm)))
+cluster_count = math.ceil(math.sqrt(math.sqrt(len(mySeries_daily_norm))))
 
 # Euclidean distance metric
-km_euc = TimeSeriesKMeans(n_clusters=10, metric="euclidean", max_iter=1000)
+km_euc = TimeSeriesKMeans(n_clusters=cluster_n, metric="euclidean", max_iter=1000)
 # DTW distance metric
-km_dtw = TimeSeriesKMeans(n_clusters=10, metric="dtw", max_iter_barycenter=1000)
+km_dtw = TimeSeriesKMeans(n_clusters=cluster_n, metric="dtw", max_iter_barycenter=1000)
 
-labels_euc = km_euc.fit_predict(mySeries_daily_norm)
-labels_dtw = km_dtw.fit_predict(mySeries_daily_norm)
+labels_euc = km_euc.fit_predict(mySeries_daily_norm[0:21])
+labels_dtw = km_dtw.fit_predict(mySeries_daily_norm[0:21])
 
 
 # 2.) Plot Results - for each label plot every series with that label
 plot_n = math.ceil(cluster_n / 2)
 
-fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n,figsize=(25,25))
+fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
 fig.suptitle("Clusters of BOF (%nFK) - calucated with euclidean metric")
 
 row_i = 0
@@ -157,7 +158,7 @@ for label in set(labels_euc):
     if len(cluster_eu) > 0:
         axs[row_i, col_j].plot(np.average(np.vstack(cluster_eu), axis=0), c="red")
     
-    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_n+col_j))
+    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_count+col_j))
     col_j +=1
     
     if col_j%plot_n == 0:
@@ -165,7 +166,7 @@ for label in set(labels_euc):
         col_j = 0
 
 
-fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n,figsize=(25,25))
+fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
 fig.suptitle("Clusters of BOF (%nFK) - calucated with dtw metric")
 
 row_i = 0
@@ -182,7 +183,7 @@ for label in set(labels_dtw):
     if len(cluster_dtw) > 0:
         axs[row_i, col_j].plot(dtw_barycenter_averaging(np.vstack(cluster_dtw)), c="red")
     
-    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_n+col_j))
+    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_count+col_j))
     col_j +=1
     
     if col_j%plot_n == 0:
@@ -190,7 +191,42 @@ for label in set(labels_dtw):
         col_j = 0
 
 
+
+# 2.) Apply dimensionality reduction via PCA
+pca = PCA(n_components=2)
+MySeries_pca = pca.fit_transform(mySeries_daily_norm)
+
+kmeans_pca = KMeans(n_clusters=cluster_n, n_init=100, max_iter=1000)
+labels_pca = kmeans_pca.fit_predict(MySeries_pca[0:21]) 
+
+# Plot result
+fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
+fig.suptitle("Clusters of BOF (%nFK) - PCA transformed and dtw metric")
+
+row_i = 0
+col_j = 0
+
+# For dtw distance metric
+for label in set(labels_pca):
+    cluster_pca = []
+    for i, elem in enumerate(labels_pca):
+        if (labels_pca[i] == label):
+            axs[row_i, col_j].plot(mySeries_daily_norm[i], c="gray", alpha=0.4)
+            cluster_pca.append(mySeries_daily_norm[i])
+            
+    if len(cluster_pca) > 0:
+        axs[row_i, col_j].plot(dtw_barycenter_averaging(np.vstack(cluster_pca)), c="red")
+    
+    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_count+col_j))
+    col_j +=1
+    
+    if col_j%plot_n == 0:
+        row_i +=1
+        col_j = 0
+
 # Quick plot
-mySeries_daily[14].plot(linewidth=1, fontsize=10)
-mySeries_daily[57].plot(linewidth=1, fontsize=10)
-mySeries_daily[58].plot(linewidth=1, fontsize=10)
+mySeries_daily[7].plot(linewidth=1, fontsize=10)
+mySeries_daily[15].plot(linewidth=1, fontsize=10)
+mySeries_daily[3].plot(linewidth=1, fontsize=10)
+mySeries_daily[19].plot(linewidth=1, fontsize=10)
+mySeries_daily[17].plot(linewidth=1, fontsize=10)
