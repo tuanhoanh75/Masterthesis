@@ -27,6 +27,8 @@ DIR = Path("/home/aegis/Dokumente/Masterarbeit/Masterthesis/Data")
 file_container = sorted(os.listdir(str(DIR) + "/" + "hdf5")) 
 plt.rcParams['figure.figsize'] = (26,14)
 plt.style.use('fivethirtyeight')
+y_ticks = np.arange(0,101,10)
+
 
 # Get all files from file container for daily data set
 daily_file = pd.HDFStore(str(DIR) + "/" + "hdf5" + "/" + "data_daily.hdf5")
@@ -109,7 +111,7 @@ year = pd.DataFrame(year, columns=['Jahr'])
 del tmp, dupl, elem, i, j, y
     
 
-# # Normalize the data, which is actually not necessary, since all data series have the same scale
+## Normalize the data, which is actually not necessary, since all data series have the same scale
 # First instantiate MinMaxScaler
 scaler = MinMaxScaler()
 mySeries_daily_norm = []
@@ -142,7 +144,32 @@ labels_dtw = km_dtw.fit_predict(mySeries_daily_norm[0:21])
 plot_n = math.ceil(cluster_n / 2)
 
 fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
-fig.suptitle("Clusters of BOF (%nFK) - calucated with euclidean metric")
+fig.suptitle("Clusters of BOF (%nFK) - calucated with euclidean metric and dtw.barycenter_averaging")
+
+row_i = 0
+col_j = 0
+
+# For euclidean distance
+for label in set(labels_euc):
+    cluster_eu = []
+    for i, elem in enumerate(labels_euc):
+        if (labels_euc[i] == label):
+            axs[row_i, col_j].plot(mySeries_daily_norm[i], c="gray", alpha=0.4)
+            cluster_eu.append(mySeries_daily_norm[i])
+            
+    if len(cluster_eu) > 0:
+        axs[row_i, col_j].plot(dtw_barycenter_averaging(np.vstack(cluster_eu)), c="red")
+    
+    axs[row_i, col_j].set_title("Cluster " + str(row_i*cluster_count+col_j))
+    col_j +=1
+    
+    if col_j%plot_n == 0:
+        row_i +=1
+        col_j = 0
+
+
+fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
+fig.suptitle("Clusters of BOF (%nFK) - calucated with euclidean metric and np.average")
 
 row_i = 0
 col_j = 0
@@ -225,8 +252,16 @@ for label in set(labels_pca):
         col_j = 0
 
 # Quick plot
-mySeries_daily[7].plot(linewidth=1, fontsize=10)
-mySeries_daily[15].plot(linewidth=1, fontsize=10)
-mySeries_daily[3].plot(linewidth=1, fontsize=10)
-mySeries_daily[19].plot(linewidth=1, fontsize=10)
-mySeries_daily[17].plot(linewidth=1, fontsize=10)
+mySeries_daily[6].plot(linewidth=1, fontsize=10)
+plt.yticks(y_ticks)
+mySeries_daily[11].plot(linewidth=1, fontsize=10)
+plt.yticks(y_ticks)
+mySeries_daily[20].plot(linewidth=1, fontsize=10)
+plt.yticks(y_ticks)
+
+##########################################################################################################
+
+
+
+
+
