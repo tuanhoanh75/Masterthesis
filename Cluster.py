@@ -19,6 +19,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tslearn.barycenters import dtw_barycenter_averaging
 from tslearn.clustering import TimeSeriesKMeans
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 
 
@@ -140,6 +141,10 @@ labels_euc = km_euc.fit_predict(mySeries_daily_norm[0:21])
 labels_dtw = km_dtw.fit_predict(mySeries_daily_norm[0:21])
 
 
+# Quick Cluster Validation
+print(f'Silhoutte Score(n=8): {silhouette_score(mySeries_daily_norm[0:21], labels_euc)}')
+
+
 # 2.) Plot Results - for each label plot every series with that label
 plot_n = math.ceil(cluster_n / 2)
 
@@ -228,7 +233,7 @@ labels_pca = kmeans_pca.fit_predict(MySeries_pca[0:21])
 
 # Plot result
 fig, axs = plt.subplots(nrows=plot_n, ncols=plot_n, figsize=(26,14))
-fig.suptitle("Clusters of BOF (%nFK) - PCA transformed and dtw metric")
+fig.suptitle("Clusters of BOF (%nFK) - PCA transformed")
 
 row_i = 0
 col_j = 0
@@ -250,6 +255,11 @@ for label in set(labels_pca):
     if col_j%plot_n == 0:
         row_i +=1
         col_j = 0
+
+
+# Quick Cluster Validation with silhoutte score
+print(f'Silhoutte Score(n=8): {silhouette_score(MySeries_pca[0:21], labels_pca)}')
+
 
 # Quick plot
 mySeries_daily[6].plot(linewidth=1, fontsize=10)
