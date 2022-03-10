@@ -15,12 +15,12 @@ import datetime as dt
 from matplotlib import pyplot as plt
 #Preprocessig
 from sklearn.preprocessing import MinMaxScaler
-# Algorithms 
-from tslearn.barycenters import dtw_barycenter_averaging
-from tslearn.clustering import TimeSeriesKMeans
+# Algorithms
+from minisom import MiniSom
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
+from tslearn.barycenters import dtw_barycenter_averaging
+from tslearn.clustering import TimeSeriesKMeans, silhouette_score
 
 
 # Presets
@@ -140,9 +140,13 @@ km_dtw = TimeSeriesKMeans(n_clusters=cluster_n, metric="dtw", max_iter_barycente
 labels_euc = km_euc.fit_predict(mySeries_daily_norm[0:21])
 labels_dtw = km_dtw.fit_predict(mySeries_daily_norm[0:21])
 
+tmp_data = mySeries_daily_norm[0:21]
+tmp_data = np.reshape(tmp_data, (21, 365, 1))
+
 
 # Quick Cluster Validation
-print(f'Silhoutte Score(n=8): {silhouette_score(mySeries_daily_norm[0:21], labels_euc)}')
+print('Silhoutte Score(n_cluster=8):', silhouette_score(tmp_data, labels=labels_euc, metric="euclidean"))
+print('\nSilhoutte Score(n_cluster=8):', silhouette_score(tmp_data, labels=labels_dtw, metric="dtw"))
 
 
 # 2.) Plot Results - for each label plot every series with that label
@@ -258,16 +262,49 @@ for label in set(labels_pca):
 
 
 # Quick Cluster Validation with silhoutte score
-print(f'Silhoutte Score(n=8): {silhouette_score(MySeries_pca[0:21], labels_pca)}')
+print('\nSilhoutte Score(n=8):', silhouette_score(MySeries_pca[0:21], labels_pca))
+
+
+# 3.) SOM Clustering
+som_x = som_y = math.ceil(math.sqrt(math.sqrt(len(mySeries_daily_norm))))
+
+som = MiniSom(som_x, som_y, len(mySeries_daily_norm[0]), sigma=0.3, learning_rate=0.1)
+
+som.random_weights_init(mySeries_daily_norm)
+som.train(mySeries_daily_norm, num_iteration=50000)
+
+# Plot result
+def plot_som_series_averaged_center(som_x, som_y, win_map):
+    fig, axs = plt.subplots(som_x, som_y, figsize=(26,14))
+    fig.suptitle("Clusters via SOM")
+    
+    for x in range(som_x):
+        for y in range(som_y):
+            cluster = (x,y)
+            if cluster in win_map.keys():
+                for series in win_map[cluster]:
+                    axs[cluster].plot(series, c="gray", alpha=0.5)
+                axs[cluster].plot(np.average(np.vstack(win_map[cluster]), axis=0), c="red")
+            
+            cluster_num = x*som_y+som_y+1
+            axs[cluster].set_title(f'Cluster {cluster_num}')
+            
+
+win_map = som.win_map(mySeries_daily_norm)
+
+plot_som_series_averaged_center(som_x, som_y, win_map)
 
 
 # Quick plot
-mySeries_daily[6].plot(linewidth=1, fontsize=10)
+mySeries_daily[7].plot(linewidth=1, fontsize=10)
 plt.yticks(y_ticks)
-mySeries_daily[11].plot(linewidth=1, fontsize=10)
+mySeries_daily[9].plot(linewidth=1, fontsize=10)
 plt.yticks(y_ticks)
-mySeries_daily[20].plot(linewidth=1, fontsize=10)
-plt.yticks(y_ticks)
+#mySeries_daily[15].plot(linewidth=1, fontsize=10)
+#plt.yticks(y_ticks)
+#mySeries_daily[17].plot(linewidth=1, fontsize=10)
+#plt.yticks(y_ticks)
+
 
 ##########################################################################################################
 
