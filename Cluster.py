@@ -268,10 +268,13 @@ print('\nSilhoutte Score(n=8):', silhouette_score(MySeries_pca[0:21], labels_pca
 # 3.) SOM Clustering
 som_x = som_y = math.ceil(math.sqrt(math.sqrt(len(mySeries_daily_norm))))
 
-som = MiniSom(som_x, som_y, len(mySeries_daily_norm[0]), sigma=0.3, learning_rate=0.1)
+# Try out adjustment to the learning paramater - the first two passed args deterine the map size
+# initialization of 8x8 SOM will yield the SOM map size 
+som = MiniSom(som_x, som_y, len(mySeries_daily_norm[0]), sigma=0.9, learning_rate=0.3, 
+              neighborhood_function='gaussian', activation_distance='euclidean')
 
-som.random_weights_init(mySeries_daily_norm)
-som.train(mySeries_daily_norm, num_iteration=50000)
+weight = som.random_weights_init(mySeries_daily_norm)
+som.train(mySeries_daily_norm[0:21], num_iteration=10000)     # train SOM with given data and pass number training iterations
 
 # Plot result
 def plot_som_series_averaged_center(som_x, som_y, win_map):
@@ -285,12 +288,17 @@ def plot_som_series_averaged_center(som_x, som_y, win_map):
                 for series in win_map[cluster]:
                     axs[cluster].plot(series, c="gray", alpha=0.5)
                 axs[cluster].plot(np.average(np.vstack(win_map[cluster]), axis=0), c="red")
+                #axs[cluster].plot(dtw_barycenter_averaging(np.vstack(win_map[cluster])), c="red")
             
             cluster_num = x*som_y+som_y+1
             axs[cluster].set_title(f'Cluster {cluster_num}')
             
 
-win_map = som.win_map(mySeries_daily_norm)
+win_map = som.win_map(mySeries_daily_norm[0:21])
+
+# Obtain the position of the winning neuron on the map; each neuron represents a cluster
+#winner = som.winner(mySeries_daily_norm[4])
+#print(winner)
 
 plot_som_series_averaged_center(som_x, som_y, win_map)
 
