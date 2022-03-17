@@ -318,6 +318,45 @@ plt.yticks(y_ticks)
 
 ##########################################################################################################
 
+# Quick Introduction to tsfresh package
+from tsfresh.examples.robot_execution_failures import download_robot_execution_failures, load_robot_execution_failures
+from tsfresh import select_features, extract_features, extract_relevant_features
+from tsfresh.utilities.dataframe_functions import impute
+
+
+download_robot_execution_failures()
+timeseries, y = load_robot_execution_failures()
+
+print(timeseries.head())
+
+## Plot data with id == 3 (no failure) and id == 20 (failure)
+timeseries[timeseries['id'] == 3].plot(subplots=True, sharex=True, figsize=(10,10)) 
+timeseries[timeseries['id'] == 20].plot(subplots=True, sharex=True, figsize=(10,10))
+
+# Returns a dataframe with more than 1200 different extracted features
+extracted_features = extract_features(timeseries, column_id="id", column_sort="time")
+
+# Next remove Nan Values and select relevant features
+impute(extracted_features)
+# Only around 682 features were classified as relevant enough
+features_filtered = select_features(extracted_features, y)
+
+# Furthermore, perform extraction, imputing and filtering at the same time with (yield same result)
+features_filtered_direct = extract_relevant_features(timeseries, y, column_id="id", column_sort="time")
+
+features_filtered = features_filtered.sort_values(by=['F_x__value_count__value_-1'])
+
+
+# Export features extraction
+export_features = features_filtered.to_csv("expor_features.csv", sep=';', index=False, header=True, encoding='utf-8')
+
+
+
+
+
+
+
+
 
 
 
