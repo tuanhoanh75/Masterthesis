@@ -58,7 +58,7 @@ for x in sorted(os.listdir(WORK_PATH)):
 
         
 # Process raw data files and convert them to a manageable data format, like csv
-# At first check if the list of files are empty, if not then procced, else skip if there are not files to process
+# At first check if the list of files is empty, if not then continue else skip because no files exists to work with
 if file_list:
     for i, elem in enumerate(file_list):
         raw_files = pd.read_csv(str(WORK_PATH) + "/" + file_list[i], sep="\s+", header=3, usecols=[0,1,6], encoding='unicode_escape')
