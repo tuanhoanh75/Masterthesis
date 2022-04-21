@@ -1,7 +1,6 @@
 import os 
 #import re
 import pandas as pd
-#import pathlib as Path
 
 """
 # Define regex pattern for substring extraction
@@ -10,7 +9,18 @@ pattern_vPeriod = re.compile(r'\d{4}-\d{4}')
 pattern_vMainCrop = re.compile(r'[A-Z]+[a-zA-Z]{,3}')
 """
 
-DIR_PATH = r"C:/Users/Tuan/Masterarbeit/Data/raw-data/"
+# Get current directoy
+cwd = os.getcwd()
+
+# Check if working directory already exist to process raw data if not create one
+if not os.path.exists(cwd + "\working_dir"):
+    os.makedirs("working_dir")
+    print("Working directoy successfully created")
+else:
+    print("Working directory exist already")
+
+"""
+DIR_PATH = Path("Users/Tuan/Masterarbeit/Data/raw-data/")
 CONV_PATH = r"C:/Users/Tuan/Masterarbeit/Data/conv_data/"
 
 list_files = sorted(os.listdir(DIR_PATH))
@@ -60,4 +70,5 @@ for i, elem in enumerate(list_files):
     
     # export each converted data files, but without meta data
     export_csv = df_file.to_csv(CONV_PATH + list_files[i] + ".csv", sep=";", index=False, header=True, encoding="utf-8")
-    
+
+"""
